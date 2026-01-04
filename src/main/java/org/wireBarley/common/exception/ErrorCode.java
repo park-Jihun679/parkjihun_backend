@@ -35,4 +35,11 @@ public class ErrorCode {
   public final static ErrorCode USER_ALREADY_DELETED = new ErrorCode(
       "USER.ERROR.USER_ALREADY.DELETED");
 
+  /* ACCOUNT */
+  public final static ErrorCode DUPLICATE_ACCOUNT = new ErrorCode(
+      "이미 존재하는 계좌번호입니다.");
+  public final static ErrorCode ACCOUNT_ALREADY_DELETED = new ErrorCode(
+      "이미 삭제된 계좌입니다.");
+  public final static ErrorCode ACCOUNT_BALANCE_NOT_ZERO = new ErrorCode(
+      "계좌에 잔액이 존재합니다.");
 }

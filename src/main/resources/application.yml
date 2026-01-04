@@ -21,3 +21,8 @@ spring:
     host: redis
     port: 6379
     ttl: 600
+logging:
+  level:
+    level:
+      root: DEBUG
+      org.springframework: DEBUG

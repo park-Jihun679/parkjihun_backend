@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.5'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.5'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'org'
@@ -9,51 +9,54 @@ version = '0.0.1-SNAPSHOT'
 description = 'wire-barley'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-mysql'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0' // Swagger
 
-	// QueryDSL
-	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
-	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
 
 tasks.withType(JavaCompile).configureEach {
-	options.generatedSourceOutputDirectory.set(querydslDir)
+    options.generatedSourceOutputDirectory.set(querydslDir)
 }
 
 sourceSets {
-	main.java.srcDirs += [ querydslDir ]
+    main.java.srcDirs += [querydslDir]
 }
 
 clean.doLast {
-	file(querydslDir).deleteDir()
+    file(querydslDir).deleteDir()
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
