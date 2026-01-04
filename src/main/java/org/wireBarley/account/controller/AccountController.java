@@ -1,8 +1,10 @@
 package org.wireBarley.account.controller;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +20,16 @@ import org.wireBarley.account.service.AccountService;
 public class AccountController {
 
     private final AccountService accountService;
+
+    @GetMapping("/accounts/{accountId}")
+    public AccountDTO getAccount(@PathVariable("accountId") UUID accountId) {
+        return accountService.getAccount(accountId);
+    }
+
+    @GetMapping("/accounts")
+    public List<AccountDTO> getAllAccount() {
+        return accountService.getAllAccount();
+    }
 
     @PostMapping("/accounts")
     public AccountDTO createAccount(@RequestBody AccountCreateDTO createDTO) {

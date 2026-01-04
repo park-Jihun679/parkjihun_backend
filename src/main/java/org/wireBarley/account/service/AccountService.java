@@ -3,6 +3,7 @@ package org.wireBarley.account.service;
 import ch.qos.logback.core.util.StringUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -71,10 +72,18 @@ public class AccountService {
 
     }
 
-    // 계좌 조회
+    // 계좌 조회 (테스트 편의 및 확장성을 위한 임시 코드)
     public AccountDTO getAccount(UUID accountId) {
 
         return accountMapper.toDTO(getAccountEntity(accountId));
+    }
+
+    // 전체 계좌 조회 (테스트 편의를 위한 임시 코드)
+    public List<AccountDTO> getAllAccount() {
+
+        List<AccountEntity> accountEntityList = accountRepository.findAll();
+
+        return accountEntityList.stream().map(accountMapper::toDTO).toList();
     }
 
     // 계좌 삭제
