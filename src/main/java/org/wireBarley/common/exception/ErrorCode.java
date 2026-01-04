@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorCode {
 
-  private String messageId;
+  private String message;
 
   /* COMMON */
   public final static ErrorCode COMMON_ACCESS_DENIED = new ErrorCode("COMMON.ERROR.ACCESS_DENIED");
@@ -38,8 +38,8 @@ public class ErrorCode {
   /* ACCOUNT */
   public final static ErrorCode DUPLICATE_ACCOUNT = new ErrorCode(
       "이미 존재하는 계좌번호입니다.");
-  public final static ErrorCode ACCOUNT_ALREADY_DELETED = new ErrorCode(
-      "이미 삭제된 계좌입니다.");
+  public final static ErrorCode ACCOUNT_DATA_NOT_FOUND = new ErrorCode(
+      "계좌를 찾을 수 없습니다.");
   public final static ErrorCode ACCOUNT_BALANCE_NOT_ZERO = new ErrorCode(
       "계좌에 잔액이 존재합니다.");
 }

@@ -1,5 +1,6 @@
 package org.wireBarley.account.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.wireBarley.account.dto.AccountCreateDTO;
 import org.wireBarley.account.dto.AccountDTO;
 import org.wireBarley.account.entity.AccountEntity;
@@ -24,7 +26,6 @@ import org.wireBarley.common.exception.InvalidRequestException;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class AccountService {
 
     public static final String BANK_CODE = "0001";
@@ -36,8 +37,13 @@ public class AccountService {
     // 계좌 생성
     public AccountDTO createAccount(AccountCreateDTO createDTO) {
 
+        /* 계좌 생성 규정이 없으므로 임시 null 처리 */
+        createDTO.setAccountNo(null);
+        createDTO.setAccountName(null);
+        createDTO.setBankCode(null);
+
         // 계좌번호 지정 시 중복 체크
-        if (!createDTO.getAccountNo().isEmpty()) {
+        if (StringUtils.hasText(createDTO.getAccountNo())) {
             accountRepository.findByAccountNo(createDTO.getAccountNo()).ifPresent(
                 account -> {
                     throw new DuplicatedDataException(ErrorCode.DUPLICATE_ACCOUNT);
@@ -47,20 +53,19 @@ public class AccountService {
 
         AccountEntity entity = accountMapper.toEntity(createDTO);
 
-        if (entity.getBankCode().isEmpty()) {
+        if (!StringUtils.hasText(entity.getBankCode())) {
             entity.setBankCode(BANK_CODE);
         }
 
         // 계좌 번호 지정
-        if (entity.getAccountNo().isEmpty()) {
+        if (!StringUtils.hasText(entity.getAccountNo())) {
             entity.setAccountNo(generateAccountNo());
         }
 
         // 계좌 이름 지정
-        if (entity.getAccountName().isEmpty()) {
+        if (!StringUtils.hasText(entity.getAccountName())) {
             entity.setAccountName(generateAccountName(entity.getAccountNo()));
         }
-
 
         return accountMapper.toDTO(accountRepository.saveAndFlush(entity));
 
@@ -68,28 +73,14 @@ public class AccountService {
 
     // 계좌 조회
     public AccountDTO getAccount(UUID accountId) {
-        // 존재 여부 확인
-        AccountEntity entity = accountRepository.findById(accountId)
-            .orElseThrow(() -> new DataNotFoundException(ErrorCode.COMMON_DATA_NOT_FOUND));
 
-        // 삭제 여부 확인
-        if (entity.isDeleted()) {
-            throw new DataNotFoundException(ErrorCode.COMMON_DATA_NOT_FOUND);
-        }
-
-        return accountMapper.toDTO(entity);
+        return accountMapper.toDTO(getAccountEntity(accountId));
     }
 
     // 계좌 삭제
     public AccountDTO deleteAccount(UUID accountId) {
-        // 존재 여부 확인
-        AccountEntity entity = accountRepository.findById(accountId)
-            .orElseThrow(() -> new DataNotFoundException(ErrorCode.COMMON_DATA_NOT_FOUND));
 
-        // 삭제 처리 확인
-        if (entity.isDeleted()) {
-            throw new InvalidRequestException(ErrorCode.ACCOUNT_ALREADY_DELETED);
-        }
+        AccountEntity entity = getAccountEntity(accountId);
 
         if (entity.getBalance().compareTo(BigDecimal.ZERO) > 0) {
             throw new InvalidRequestException(ErrorCode.ACCOUNT_BALANCE_NOT_ZERO);
@@ -113,5 +104,18 @@ public class AccountService {
         return accountNo.substring(accountNo.length() - 6) + "_계좌";
     }
 
+    // 중복 및 삭제 확인 로직 분리
+    private AccountEntity getAccountEntity(UUID accountId) {
+        // 존재 여부 확인
+        AccountEntity entity = accountRepository.findById(accountId)
+            .orElseThrow(() -> new DataNotFoundException(ErrorCode.ACCOUNT_DATA_NOT_FOUND));
+
+        // 삭제 처리 확인
+        if (entity.isDeleted()) {
+            throw new DataNotFoundException(ErrorCode.ACCOUNT_DATA_NOT_FOUND);
+        }
+
+        return entity;
+    }
 
 }

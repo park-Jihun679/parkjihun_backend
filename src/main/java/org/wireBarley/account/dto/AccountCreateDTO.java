@@ -2,7 +2,6 @@ package org.wireBarley.account.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Data;
 
 @Builder

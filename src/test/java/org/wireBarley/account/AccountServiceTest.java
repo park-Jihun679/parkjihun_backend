@@ -80,7 +80,7 @@ public class AccountServiceTest {
         assertTrue(result.isDeleted());
         assertThrows(DataNotFoundException.class,
             () -> accountService.getAccount(createdAccount.getAccountId()));
-        assertThrows(InvalidRequestException.class,
+        assertThrows(DataNotFoundException.class,
             () -> accountService.deleteAccount(createdAccount.getAccountId()));
     }
 }

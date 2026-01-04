@@ -38,13 +38,6 @@ public class GlobalExceptionHandler {
         .body(response);
   }
 
-  @ExceptionHandler(value = AuthenticationException.class)
-  protected ResponseEntity<ErrorResponse> handleAuthenticationException(RuntimeException ex) {
-    ErrorResponse response = ErrorResponse.of(ex.getMessage(), HttpStatus.FORBIDDEN,
-        ErrorCode.COMMON_ACCESS_DENIED);
-    return ResponseEntity.status(response.getStatus()).body(response);
-  }
-
   @ExceptionHandler(value = {UnsupportedEncodingException.class, URISyntaxException.class,
       NoSuchAlgorithmException.class, InvalidKeyException.class, JsonProcessingException.class})
   protected ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
