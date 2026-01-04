@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_local
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: wire_barley
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1234
+    volumes:
+      - ./db/data:/var/lib/mysql
+    command:
+      - mysqld
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:alpine
+    container_name: redis_local
+    ports:
+      - "6379:6379"
+
+#  api:
+#    build: .
+#    image: openjdk:17-jdk
+#    container_name: wire-barley-api
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - mysql
+#      - redis
+#    volumes:
+#      - ./application.yml:/config/application.yml
+#      - ./logs:/logs

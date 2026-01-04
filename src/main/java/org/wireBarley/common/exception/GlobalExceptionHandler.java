@@ -67,53 +67,9 @@ public class GlobalExceptionHandler {
         .body(response);
   }
 
-  //  @ExceptionHandler(value = {BindingErrorException.class})
-//  protected ResponseEntity<ErrorResponse> handleIBindingErrorException(BindingErrorException ex) {
-//    ErrorResponse response = ErrorResponse.of(ex.getMessage(), HttpStatus.BAD_REQUEST,
-//        ex.getFieldErrors(), ex.getErrorCode());
-//
-//    return ResponseEntity
-//        .status(response.getStatus())
-//        .body(response);
-//  }
-//
-//
   @ExceptionHandler(value = {DataNotFoundException.class})
   protected ResponseEntity<ErrorResponse> handleDataNotFoundException(BaseRuntimeException ex) {
     ErrorResponse response = ErrorResponse.of(ex.getMessage(), HttpStatus.NOT_FOUND,
-        ex.getErrorCode());
-
-    return ResponseEntity
-        .status(response.getStatus())
-        .body(response);
-  }
-
-  //
-//
-//  @ExceptionHandler(value = {DuplicatedDataException.class})
-//  protected ResponseEntity<ErrorResponse> handleDuplicatedDataException(BaseRuntimeException ex) {
-//    ErrorResponse response = ErrorResponse.of(ex.getMessage(), HttpStatus.CONFLICT,
-//        ex.getErrorCode());
-//
-//    return ResponseEntity
-//        .status(response.getStatus())
-//        .body(response);
-//  }
-//
-//  @ExceptionHandler(value = {ExternalSystemException.class})
-//  protected ResponseEntity<ErrorResponse> handleExternalSystemException(BaseRuntimeException ex) {
-//    ErrorResponse response = ErrorResponse.of(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE,
-//        ex.getErrorCode());
-//
-//    return ResponseEntity
-//        .status(response.getStatus())
-//        .body(response);
-//  }
-//
-  @ExceptionHandler(value = {AccessDeniedException.class,
-      org.springframework.security.access.AccessDeniedException.class})
-  protected ResponseEntity<ErrorResponse> handleAccessDeniedException(BaseRuntimeException ex) {
-    ErrorResponse response = ErrorResponse.of(ex.getMessage(), HttpStatus.FORBIDDEN,
         ex.getErrorCode());
 
     return ResponseEntity
