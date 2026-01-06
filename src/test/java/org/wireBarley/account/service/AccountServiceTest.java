@@ -1,4 +1,4 @@
-package org.wireBarley.account;
+package org.wireBarley.account.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,14 +19,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.wireBarley.account.dto.AccountCreateDTO;
 import org.wireBarley.account.dto.AccountDTO;
-import org.wireBarley.account.service.AccountService;
 import org.wireBarley.common.exception.DataNotFoundException;
-import org.wireBarley.common.exception.InvalidRequestException;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @Transactional
-@Slf4j
 public class AccountServiceTest {
 
 
