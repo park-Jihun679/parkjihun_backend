@@ -23,7 +23,7 @@ public abstract class BaseFilterDTO {
     @JsonIgnore
     public PageRequest getPageRequest() {
         if (this.size == -1) {
-
+            size = Integer.MAX_VALUE;
         }
         Sort sortOrderSum = null;
         if (sort != null) {

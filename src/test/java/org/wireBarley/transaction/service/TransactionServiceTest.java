@@ -22,7 +22,7 @@ import org.wireBarley.transaction.dto.TransactionDTO;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-@Transactional
+//@Transactional
 class TransactionServiceTest {
 
     @Autowired

@@ -23,4 +23,4 @@ spring:
     ttl: 600
 logging:
   level:
-    root:
+    root: DEBUG

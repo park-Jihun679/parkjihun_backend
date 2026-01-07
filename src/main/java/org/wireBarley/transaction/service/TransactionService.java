@@ -5,6 +5,7 @@ import static org.wireBarley.account.service.AccountService.BANK_CODE;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.wireBarley.account.entity.AccountEntity;
@@ -14,6 +15,7 @@ import org.wireBarley.common.exception.ErrorCode;
 import org.wireBarley.transaction.domain.Direction;
 import org.wireBarley.transaction.dto.TransactionCreateDTO;
 import org.wireBarley.transaction.dto.TransactionDTO;
+import org.wireBarley.transaction.dto.TransactionFilterDTO;
 import org.wireBarley.transaction.entity.TransactionEntity;
 import org.wireBarley.transaction.mapper.TransactionMapper;
 import org.wireBarley.transaction.repository.TransactionRepository;
@@ -39,6 +41,14 @@ public class TransactionService {
             case WITHDRAWAL -> withdrawal(createDTO);
             case TRANSFER -> transfer(createDTO);
         };
+    }
+
+    public Page<TransactionDTO> getTransactionList(TransactionFilterDTO filter) {
+
+        // 유효하는 계좌인지 확인
+        getAccountEntityByAccountNo(filter.getAccountNo());
+
+        return transactionRepository.findByFilter(filter, filter.getPageRequest());
     }
 
     // 입금
