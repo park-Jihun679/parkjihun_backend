@@ -8,10 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.wireBarley.account.entity.AccountEntity;
 import org.wireBarley.account.repository.AccountRepository;
 import org.wireBarley.common.exception.DataNotFoundException;
 import org.wireBarley.common.exception.ErrorCode;
+import org.wireBarley.common.exception.InvalidRequestException;
 import org.wireBarley.transaction.domain.Direction;
 import org.wireBarley.transaction.dto.TransactionCreateDTO;
 import org.wireBarley.transaction.dto.TransactionDTO;
@@ -56,6 +58,7 @@ public class TransactionService {
         AccountEntity account = getAccountEntityByAccountNo(createDTO.getAccountNo());
 
         TransactionEntity entity = transactionMapper.toEntity(createDTO);
+        entity.setDescription("입금");
         return deposit(entity, account);
     }
 
@@ -82,13 +85,14 @@ public class TransactionService {
 
         // 출금 한도 확인
         if (totalWithdrawal.compareTo(DAILY_WITHDRAWAL_LIMIT) > 0) {
-            // TODO 출금 한도 초과 예외처리
+            throw new InvalidRequestException(ErrorCode.OVER_DAILY_WITHDRAWAL_LIMIT);
         }
 
         // 일 한도 수정
         account.setDailyTotalWithdrawal(totalWithdrawal);
 
         TransactionEntity entity = transactionMapper.toEntity(createDTO);
+        entity.setDescription("출금");
 
         return withdrawal(entity, account);
     }
@@ -101,13 +105,14 @@ public class TransactionService {
 
         // 잔액 확인
         if (afterBalance.signum() < 0) {
-            // TODO 잔액 부족 예외 처리
+            throw new InvalidRequestException(ErrorCode.INSUFFICIENT_ACCOUNT_BALANCE);
         }
 
         transactionEntity.setBeforeBalance(account.getBalance());
 
         account.setBalance(afterBalance);
 
+        transactionEntity.setAccountId(account.getAccountId());
         transactionEntity.setAfterBalance(afterBalance);
         transactionEntity.setDirection(Direction.OUT);
 
@@ -118,21 +123,25 @@ public class TransactionService {
     private TransactionDTO transfer(TransactionCreateDTO createDTO) {
 
         if (createDTO.getAccountNo().equals(createDTO.getOtherAccountNo())) {
-            // TODO 동일 계좌 에러
+            throw new InvalidRequestException(ErrorCode.CAN_NOT_TRANSFER_THIS_ACCOUNT);
         }
 
         AccountEntity withdrawalAccount = getAccountEntityByAccountNo(createDTO.getAccountNo());
 
         // 이체 한도 확인
-        BigDecimal totalTransfer = withdrawalAccount.getDailyTotalTransfer().add(createDTO.getAmount());
+        BigDecimal totalTransfer = withdrawalAccount.getDailyTotalTransfer()
+            .add(createDTO.getAmount());
 
         if (totalTransfer.compareTo(DAILY_TRANSFER_LIMIT) > 0) {
-            // TODO 이체 한도 초과 예외처리
+            throw new InvalidRequestException(ErrorCode.OVER_DAILY_TRANSFER_LIMIT);
         }
         withdrawalAccount.setDailyTotalTransfer(totalTransfer);
 
         // 출금 이체내역
         TransactionEntity withdrawalEntity = transactionMapper.toEntity(createDTO);
+        if (!StringUtils.hasText(withdrawalEntity.getDescription())) {
+            withdrawalEntity.setDescription(createDTO.getOtherAccountNo() + "_이체");
+        }
 
         // 수수료 합산 후 출금
         withdrawalEntity.setAmount(createDTO.getAmount().multiply(TRANSFER_FEE));
@@ -142,6 +151,9 @@ public class TransactionService {
         // 입금 이체내역
         TransactionEntity depositEntity = transactionMapper.toDepositEntity(createDTO);
         depositEntity.setOtherBankCode(BANK_CODE);
+        if (!StringUtils.hasText(depositEntity.getDescription())) {
+            depositEntity.setDescription(createDTO.getAccountNo() + "_이체");
+        }
 
         deposit(depositEntity, getAccountEntityByAccountNo(createDTO.getOtherAccountNo()));
 

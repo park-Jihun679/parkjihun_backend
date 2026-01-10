@@ -42,4 +42,14 @@ public class ErrorCode {
       "계좌를 찾을 수 없습니다.");
   public final static ErrorCode ACCOUNT_BALANCE_NOT_ZERO = new ErrorCode(
       "계좌에 잔액이 존재합니다.");
+
+  /* TRANSACTION */
+  public final static ErrorCode OVER_DAILY_WITHDRAWAL_LIMIT = new ErrorCode(
+      "당일 출금 한도를 초과하였습니다.");
+  public final static ErrorCode INSUFFICIENT_ACCOUNT_BALANCE = new ErrorCode(
+      "계좌 잔액이 부족합니다.");
+  public final static ErrorCode CAN_NOT_TRANSFER_THIS_ACCOUNT = new ErrorCode(
+      "본인 계좌에 이체할 수 없습니다.");
+  public final static ErrorCode OVER_DAILY_TRANSFER_LIMIT = new ErrorCode(
+      "당일 이체 한도를 초과하였습니다.");
 }
