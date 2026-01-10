@@ -14,6 +14,7 @@ public class AccountScheduler {
 
     private final AccountRepository accountRepository;
 
+    // 매일 자정 일일 한도 초기화
     @Scheduled(cron = "0 0 0 * * *")
     public int resetDailyLimits() {
         return accountRepository.resetDailyLimits();

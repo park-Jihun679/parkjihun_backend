@@ -3,6 +3,7 @@ package org.wireBarley.transaction.service;
 import static org.wireBarley.account.service.AccountService.BANK_CODE;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -48,14 +49,14 @@ public class TransactionService {
     public Page<TransactionDTO> getTransactionList(TransactionFilterDTO filter) {
 
         // 유효하는 계좌인지 확인
-        getAccountEntityByAccountNo(filter.getAccountNo());
+        validateAccount(filter.getAccountNo());
 
         return transactionRepository.findByFilter(filter, filter.getPageRequest());
     }
 
     // 입금
     private TransactionDTO deposit(TransactionCreateDTO createDTO) {
-        AccountEntity account = getAccountEntityByAccountNo(createDTO.getAccountNo());
+        AccountEntity account = getAccountForUpdate(createDTO.getAccountNo());
 
         TransactionEntity entity = transactionMapper.toEntity(createDTO);
         entity.setDescription("입금");
@@ -79,7 +80,7 @@ public class TransactionService {
 
     // 출금
     private TransactionDTO withdrawal(TransactionCreateDTO createDTO) {
-        AccountEntity account = getAccountEntityByAccountNo(createDTO.getAccountNo());
+        AccountEntity account = getAccountForUpdate(createDTO.getAccountNo());
 
         BigDecimal totalWithdrawal = account.getDailyTotalWithdrawal().add(createDTO.getAmount());
 
@@ -126,7 +127,19 @@ public class TransactionService {
             throw new InvalidRequestException(ErrorCode.CAN_NOT_TRANSFER_THIS_ACCOUNT);
         }
 
-        AccountEntity withdrawalAccount = getAccountEntityByAccountNo(createDTO.getAccountNo());
+        // 계좌번호 순서대로 lock 순서 지정
+        String[] locks = {createDTO.getAccountNo(), createDTO.getOtherAccountNo()};
+        Arrays.sort(locks);
+
+        AccountEntity firstAccount = getAccountForUpdate(locks[0]);
+        AccountEntity secondAccount = getAccountForUpdate(locks[1]);
+
+        AccountEntity withdrawalAccount =
+            createDTO.getAccountNo().equals(locks[0]) ? firstAccount : secondAccount;
+
+        AccountEntity depositAccount =
+            createDTO.getOtherAccountNo().equals(locks[0]) ? firstAccount : secondAccount;
+
 
         // 이체 한도 확인
         BigDecimal totalTransfer = withdrawalAccount.getDailyTotalTransfer()
@@ -148,6 +161,7 @@ public class TransactionService {
 
         TransactionDTO withdrawalResult = withdrawal(withdrawalEntity, withdrawalAccount);
 
+
         // 입금 이체내역
         TransactionEntity depositEntity = transactionMapper.toDepositEntity(createDTO);
         depositEntity.setOtherBankCode(BANK_CODE);
@@ -155,14 +169,14 @@ public class TransactionService {
             depositEntity.setDescription(createDTO.getAccountNo() + "_이체");
         }
 
-        deposit(depositEntity, getAccountEntityByAccountNo(createDTO.getOtherAccountNo()));
+        deposit(depositEntity, depositAccount);
 
         return withdrawalResult;
     }
 
 
-    // account 데이터 조회
-    private AccountEntity getAccountEntityByAccountNo(String accountNo) {
+    // account 데이터 확인
+    private void validateAccount(String accountNo) {
         // 존재 여부 확인
         AccountEntity entity = accountRepository.findByAccountNo(accountNo)
             .orElseThrow(() -> new DataNotFoundException(ErrorCode.ACCOUNT_DATA_NOT_FOUND));
@@ -171,6 +185,13 @@ public class TransactionService {
         if (entity.isDeleted()) {
             throw new DataNotFoundException(ErrorCode.ACCOUNT_DATA_NOT_FOUND);
         }
-        return entity;
     }
+
+    // lock account 조회 (입금, 출금, 이체 시 사용)
+    private AccountEntity getAccountForUpdate(String accountNo) {
+
+        return accountRepository.findByAccountNoForUpdate(accountNo)
+            .orElseThrow(() -> new DataNotFoundException(ErrorCode.ACCOUNT_DATA_NOT_FOUND));
+    }
+
 }
