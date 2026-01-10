@@ -123,6 +123,7 @@ public class TransactionService {
     // 이체
     private TransactionDTO transfer(TransactionCreateDTO createDTO) {
 
+        // 본인 계좌 이체 시 예외처리
         if (createDTO.getAccountNo().equals(createDTO.getOtherAccountNo())) {
             throw new InvalidRequestException(ErrorCode.CAN_NOT_TRANSFER_THIS_ACCOUNT);
         }

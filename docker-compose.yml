@@ -23,16 +23,3 @@ services:
     container_name: redis_local
     ports:
       - "6379:6379"
-
-#  api:
-#    build: .
-#    image: openjdk:17-jdk
-#    container_name: wire-barley-api
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - mysql
-#      - redis
-#    volumes:
-#      - ./application.yml:/config/application.yml
-#      - ./logs:/logs
