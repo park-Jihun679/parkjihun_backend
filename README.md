@@ -52,3 +52,7 @@ public class WireBarleyApplication {
 	}
 }
 ```
+
+---
+## 3.테이블 구조
+<img width="523" height="571" alt="image" src="https://github.com/user-attachments/assets/01e23dca-7b7f-49d0-b05f-ce7c5e6cc193" />
