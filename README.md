@@ -70,12 +70,13 @@ public class WireBarleyApplication {
 | DELETE | `/api/v1/accounts/{accountId}` | 계좌 삭제 (논리 삭제) |
 
 거래 내역 조회 GET /api/v1/transactions
+변수 입력 시 조건 적용용
 | 이름                 | 타입       | 필수 | 설명                          |
 | ------------------ | -------- | -- | --------------------------- |
 | page               | number   | N  | 페이지 번호 (0부터 시작)             |
 | size               | number   | N  | 페이지 당 조회 건수                 |
 | sort               | string[] | N  | 정렬 기준 (예: createdDate,desc) |
-| accountNo          | string   | N  | 조회할 계좌 번호                   |
+| accountNo          | string   | Y  | 조회할 계좌 번호                   |
 | direction          | string   | N  | 거래 방향 (IN / OUT)            |
 | descriptionKeyword | string   | N  | 거래 설명 키워드 검색                |
 | startDate          | date     | N  | 조회 시작 날짜                    |
@@ -98,6 +99,8 @@ public class WireBarleyApplication {
 | accountName | string | N  | 계좌명   |
 | bankCode    | string | N  | 은행 코드 |
 
+http://localhost:8080/swagger-ui/index.html#/
+서버 실행 후 swagger를 통해 확인할 수 있습니다.
 
 ---
 ## 4.테이블 구조
@@ -123,3 +126,9 @@ Transaction 테이블
 - 이체의 경우 출금 계좌와 입금 계좌를 모두 기록하여 거래 흐름을 추적할 수 있도록 설계되었습니다.
 
 - 계좌 번호, 생성 일자에 복합 인덱스를 사용해 조회 성능을 최적화할 수 있도록 설계하였습니다.
+
+--- 
+## 5.외부 라이브러리
+- querydsl : 동적 쿼리 적용을 위해 사용 (거래내역 조회 추가 조건 발생 시 filterDTO를 통해 수정을 최소화 하여 조건 추가(확장성 고려))
+- flyway : db 마이그레이션 및 서버 실행 시 동일한 환경의 db 세팅
+- swagger : api 명세 확인 및 테스트 목적
