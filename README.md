@@ -4,6 +4,15 @@
 계좌 생성/삭제 및 계좌 내역 조회  
 계좌간 입금, 출금, 이체 시스템 기능을 구현하였습니다.
 
+### 평가 사항
+- 확장성을 고려하여 queryDSL 동적 쿼리를 적용하였고 거래내역 조회 시 filter 조건을 수정하여 원하는 조건의 조회가 가능합니다.
+추후 조건이 추가될 시 최소한의 수정을 통해 변경사항을 적용할 수 있습니다.
+- 테스트 코드를 작성하여 데이터를 확인하였고 서버 실행 후 swagger를 통해 확인하였습니다.
+- 예외 처리 코드들을 작성하여 안정성을 확보하였습니다.
+
+- 동시성 이슈를 고려하여 입금, 출금, 이체 시 db lock를 적용하였습니다.
+- 테스트 편의성 및 확장성을 위해 계좌 조회 API를 작성했습니다.
+
 ---
 
 ## 1. 실행 환경
@@ -70,7 +79,7 @@ public class WireBarleyApplication {
 | DELETE | `/api/v1/accounts/{accountId}` | 계좌 삭제 (논리 삭제) |
 
 거래 내역 조회 GET /api/v1/transactions
-변수 입력 시 조건 적용용
+변수 입력 시 조건 적용
 | 이름                 | 타입       | 필수 | 설명                          |
 | ------------------ | -------- | -- | --------------------------- |
 | page               | number   | N  | 페이지 번호 (0부터 시작)             |
@@ -105,7 +114,7 @@ http://localhost:8080/swagger-ui/index.html#/
 ---
 ## 4.테이블 구조
 <img width="523" height="571" alt="image" src="https://github.com/user-attachments/assets/01e23dca-7b7f-49d0-b05f-ce7c5e6cc193" />
-계좌(Account), 거래 내역(Transaction) 테이블을 설계하였습니다.
+  계좌(Account), 거래 내역(Transaction) 테이블을 설계하였습니다.
 
 Account 테이블
 
@@ -129,6 +138,6 @@ Transaction 테이블
 
 --- 
 ## 5.외부 라이브러리
-- querydsl : 동적 쿼리 적용을 위해 사용 (거래내역 조회 추가 조건 발생 시 filterDTO를 통해 수정을 최소화 하여 조건 추가(확장성 고려))
+- querydsl : 동적 쿼리 적용을 위해 사용
 - flyway : db 마이그레이션 및 서버 실행 시 동일한 환경의 db 세팅
 - swagger : api 명세 확인 및 테스트 목적
