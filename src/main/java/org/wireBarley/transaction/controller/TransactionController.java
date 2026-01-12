@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.wireBarley.example.dto.ExampleDTO;
-import org.wireBarley.example.dto.ExampleFilterDTO;
 import org.wireBarley.transaction.dto.TransactionCreateDTO;
 import org.wireBarley.transaction.dto.TransactionDTO;
 import org.wireBarley.transaction.dto.TransactionFilterDTO;
