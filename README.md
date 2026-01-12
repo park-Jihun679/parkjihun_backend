@@ -69,6 +69,35 @@ public class WireBarleyApplication {
 | GET    | `/api/v1/accounts/{accountId}` | 계좌 상세 조회      |
 | DELETE | `/api/v1/accounts/{accountId}` | 계좌 삭제 (논리 삭제) |
 
+거래 내역 조회 GET /api/v1/transactions
+| 이름                 | 타입       | 필수 | 설명                          |
+| ------------------ | -------- | -- | --------------------------- |
+| page               | number   | N  | 페이지 번호 (0부터 시작)             |
+| size               | number   | N  | 페이지 당 조회 건수                 |
+| sort               | string[] | N  | 정렬 기준 (예: createdDate,desc) |
+| accountNo          | string   | N  | 조회할 계좌 번호                   |
+| direction          | string   | N  | 거래 방향 (IN / OUT)            |
+| descriptionKeyword | string   | N  | 거래 설명 키워드 검색                |
+| startDate          | date     | N  | 조회 시작 날짜                    |
+| endDate            | date     | N  | 조회 종료 날짜                    |
+
+거래 생성(입금/출금/이체) POST /api/v1/transactions
+| 이름             | 타입     | 필수 | 설명                                    |
+| -------------- | ------ |----| ------------------------------------- |
+| type           | string | Y  | 거래 유형 (DEPOSIT / WITHDRAW / TRANSFER) |
+| accountNo      | string | Y  | 거래 대상 계좌 번호                           |
+| amount         | number | Y  | 거래 금액                                 |
+| otherBankCode  | string | N  | 상대 은행 코드 (이체 시 사용)                    |
+| otherAccountNo | string | N  | 상대 계좌 번호 (이체 시 사용)                    |
+| description    | string | N  | 거래 설명                                 |
+
+계좌 생성 POST /api/v1/accounts
+| 이름          | 타입     | 필수 | 설명    |
+| ----------- | ------ | -- | ----- |
+| accountNo   | string | N  | 계좌 번호 |
+| accountName | string | N  | 계좌명   |
+| bankCode    | string | N  | 은행 코드 |
+
 
 ---
 ## 4.테이블 구조
