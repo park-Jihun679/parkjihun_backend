@@ -114,7 +114,8 @@ http://localhost:8080/swagger-ui/index.html#/
 ---
 ## 4.테이블 구조
 <img width="523" height="571" alt="image" src="https://github.com/user-attachments/assets/01e23dca-7b7f-49d0-b05f-ce7c5e6cc193" />
-  계좌(Account), 거래 내역(Transaction) 테이블을 설계하였습니다.
+
+계좌(Account), 거래 내역(Transaction) 테이블을 설계하였습니다.
 
 Account 테이블
 
